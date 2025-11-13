@@ -21,13 +21,20 @@ const Products: React.FC<PropType> = (props) => {
   >([]);
   const router = useRouter();
   const fetch = async () => {
-    await axios.get('/api/products').then(async (data) => {
-      setItems(data.data);
-      for (let i = 0; i < items.length; i++) {
-        await getAvatarURL(i);
+    try {
+
+      const response = await axios.get('/api/products');
+      const products = response.data;
+      setItems(products);
+
+      for (let i = 0; i < products.length; i++) {
+        await getAvatarURL(products[i].id, i);
       }
-    });
-  };
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+    }
+  }
+
   async function getAvatarURL(index: number) {
     await axios
       .get(`/api/products/${items[index].id}/avatar`, {
